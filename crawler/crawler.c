@@ -104,12 +104,12 @@ int main(int argc, char *argv[]){
             printf("External URL: ");
         }
         printf("Found url: %s\n", result);
-        free(result);
         // webpage_delete((void*)newpagep);
+        // free(newpagep);
+        free(result);
     }
     print_web_queue((queue_s *)qp);
     qclose(qp);
-
     // 2.5. dealocate webpage
     webpage_delete((void*)pagep);
     exit(EXIT_SUCCESS);
