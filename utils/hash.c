@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "hash.h"
 #include "queue.h"
+
 /* 
  * SuperFastHash() -- produces a number between 0 and the tablesize-1.
  * 
