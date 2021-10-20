@@ -1,10 +1,10 @@
 # Not ignored: .c, .h, Makefile
-!*.c
-!*.h
-!Makefile
 *
 !/**/
 !*.*
+!*.c
+!*.h
+!Makefile
 
 # Object files and libraries
 *.o
