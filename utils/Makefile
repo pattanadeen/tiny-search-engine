@@ -1,9 +1,13 @@
 CFLAGS=-Wall -pedantic -std=c11 -I. -g
+OFILES=queue.o hash.o webpage.o
+TESTFILES=test_success  test_failed  test_hash
+DEVFILES=dev_qapply dev_hash
 
-all:   			test_success dev_qapply test_failed dev_hash test_hash
+all:   			$(OFILES)
+				ar cr ../lib/libutils.a $(OFILES)
 
 %.o:			%.c %.h
-				gcc $(CLAGS) -c $<
+				gcc $(CFLAGS) -c $<
 
 dev_qapply: 	queue.o car.o dev_qapply.o
 				gcc $(CFLAGS) queue.o car.o dev_qapply.o -o $@
@@ -21,4 +25,4 @@ test_failed:   	queue.o car.o test_failed.o
 				gcc $(CFLAGS) queue.o car.o test_failed.o -o $@
 
 clean:
-				rm -f *.o test_success dev_qapply test_failed dev_hash test_hash
+				rm -f *.o $(DEVFILES) $(TESTFILES)
