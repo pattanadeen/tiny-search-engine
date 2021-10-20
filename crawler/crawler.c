@@ -73,12 +73,12 @@ int main(int argc, char *argv[]){
     queue_t *qp = qopen();
     // hashtable_t *htp = hopen(10);
 
-    // // hash
+    // hash
     // while ((pos = webpage_getNextURL(pagep, pos, &result)) > 0) {
     //     webpage_t *newpagep = webpage_new(result, 0, html);
     //     if(IsInternalURL(result)){
     //         printf("Internal URL: ");
-    //         hput(htp, newpagep, ((webpage_s *)newpagep)->url, ((webpage_s *)newpagep)->depth);
+    //         hput(htp, newpagep, result, strlen(result));
     //         printf("put already");
     //     }
     //     else{
@@ -86,16 +86,15 @@ int main(int argc, char *argv[]){
     //     }
     //     printf("Found url: %s\n", result);
     //     free(result);
-    //     // webpage_delete((void*)newpagep);
+        // webpage_delete((void*)newpagep);
     // }
-    print_web_queue((queue_s *)qp);
-    qclose(qp);
 
     // queue
     // pos = 0;
+    // char *result2;
+    
     while ((pos = webpage_getNextURL(pagep, pos, &result)) > 0) {
         webpage_t *newpagep = webpage_new(result, 0, html);
-        // webpage_t *searchpagep = hsearch(htp, searchfn, ((webpage_s *)newpagep)->url, ((webpage_s *)newpagep)->depth);
         if(IsInternalURL(result)){
             printf("Internal URL: ");
             qput(qp, newpagep);
