@@ -17,30 +17,30 @@
 #include "queue.h"
 #include "car.h"
 
-typedef struct webpage {
-  char *url;                               // url of the page
-  char *html;                              // html code of the page
-  size_t html_len;                         // length of html code
-  int depth;                               // depth of crawl
-} webpage_s;
+// typedef struct webpage {
+//   char *url;                               // url of the page
+//   char *html;                              // html code of the page
+//   size_t html_len;                         // length of html code
+//   int depth;                               // depth of crawl
+// } webpage_s;
 
-void print_web_queue(queue_s *qp) {
-    node_t *p;
-    int i=0;
-    printf("front --> ");
-    for (p = ((node_t *)qp->front); p != NULL; p = p->next) {
-        webpage_s * webp = (webpage_s *)p->element;
-        printf("%d\n", i);
-        i = i+1;
-        printf("| %s, %d |", webp->url, webp->depth);
-    }
-    printf("%d\n", i);
-    printf(" <-- back\n");
+// void print_web_queue(queue_s *qp) {
+//     node_t *p;
+//     int i=0;
+//     printf("front --> ");
+//     for (p = ((node_t *)qp->front); p != NULL; p = p->next) {
+//         webpage_s * webp = (webpage_s *)p->element;
+//         printf("%d\n", i);
+//         i = i+1;
+//         printf("| %s, %d |", webp->url, webp->depth);
+//     }
+//     printf("%d\n", i);
+//     printf(" <-- back\n");
 
-    return;
-}
+//     return;
+// }
 
-bool searchfn(void* elementp,const void* keyp){
+bool searchfn(void* elementp, const void* keyp){
     if(keyp == NULL || elementp == NULL){
         printf("NULL value");
         return false;
@@ -54,14 +54,16 @@ bool searchfn(void* elementp,const void* keyp){
 }
 
 int main(int argc, char *argv[]){
-    printf("Hello Worlddd\n");
+    
     // 2.1. create webpage
     char *html = "html";
     webpage_t *pagep = webpage_new("https://thayer.github.io/engs50/", 0, html);
+    
 
     // 2.3. check fetching
     if(webpage_fetch(pagep)){
-        printf("fetch success\n");
+        printf("Fetch Successful!!\n");
+        printf("Seed URL: %s\n", webpage_getURL(pagep));
     }
     else{
         exit(EXIT_FAILURE);
@@ -71,6 +73,32 @@ int main(int argc, char *argv[]){
     int pos = 0;
     char *result;
     queue_t *qp = qopen();
+
+    while ((pos = webpage_getNextURL(pagep, pos, &result)) > 0) {
+        webpage_t *newpagep = webpage_new(result, 0, html);
+
+        if(IsInternalURL(result)){
+        printf("Found Internal URL: ");
+        qput(qp, newpagep);
+        }
+        else{
+            printf("Found External URL: ");
+        }
+
+        printf("%s\n", result);
+
+        free(result);     
+    }
+
+    qapply(qp, webpage_delete);
+    qclose(qp);
+    webpage_delete((void *)pagep);
+    // free(newpagep);
+    // char *result;
+    // webpage_getNextURL(pagep, 1, &result);
+    
+    // queue_t *qp = qopen();
+
     // hashtable_t *htp = hopen(10);
 
     // hash
@@ -93,24 +121,31 @@ int main(int argc, char *argv[]){
     // pos = 0;
     // char *result2;
     
-    while ((pos = webpage_getNextURL(pagep, pos, &result)) > 0) {
-        webpage_t *newpagep = webpage_new(result, 0, html);
-        if(IsInternalURL(result)){
-            printf("Internal URL: ");
-            qput(qp, newpagep);
-            printf("put already");
-        }
-        else{
-            printf("External URL: ");
-        }
-        printf("Found url: %s\n", result);
-        // webpage_delete((void*)newpagep);
-        // free(newpagep);
-        free(result);
-    }
-    print_web_queue((queue_s *)qp);
-    qclose(qp);
+    // 2.4. print URL
+    // int pos = 0;
+    // char *result;
+    // while ((pos = webpage_getNextURL(pagep, pos, &result)) > 0) {
+    //     // webpage_t *newpagep = webpage_new(result, 0, html);
+
+    //     if(IsInternalURL(result)){
+    //         printf("Found Internal URL: ");
+    //         // qput(qp, newpagep);
+    //     }
+    //     else{
+    //         printf("Found External URL: ");
+    //     }
+
+    //     printf("%s\n", result);
+
+    //     webpage_delete((void *)pagep);
+    //     free(result);
+    // }
+
+    // print_web_queue((queue_s *)qp);
+
     // 2.5. dealocate webpage
-    webpage_delete((void*)pagep);
+    
+    // qclose(qp);
+    
     exit(EXIT_SUCCESS);
 }
