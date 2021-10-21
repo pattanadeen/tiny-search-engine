@@ -95,10 +95,7 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)){
         return;
     }
     node_t *newNode;
-    int i = 1;
     for (newNode = (node_t*)(((queue_s *)qp)->front); newNode != NULL; newNode = newNode->next) {
-        printf("applying %d\n", i);
-        i = i + 1;
         fn(newNode->element);
     }
 }
