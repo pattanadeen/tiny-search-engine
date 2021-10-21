@@ -84,7 +84,7 @@ void webpage_delete(void *data)
   if (page != NULL) {
     if (page->url) free(page->url);
     if (page->html) free(page->html);
-    free(page);
+    //free(page);
   }
 }
 

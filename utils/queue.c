@@ -39,8 +39,9 @@ void qclose(queue_t *qp) {
     while (p != NULL) {        
         node_t *temp = p;
         p = p->next;
-        
-        free(temp);
+        if (temp != NULL) {
+            free(temp);
+        }
     }
 
     free(p);
@@ -90,7 +91,7 @@ void* qget(queue_t *qp){
 }
 
 void qapply(queue_t *qp, void (*fn)(void* elementp)){
-    if(qp == NULL){
+    if(qp == NULL || ((queue_s *)qp)->front == NULL || ((queue_s *)qp)->back == NULL){
         printf("qp is NULL\n");
         return;
     }
