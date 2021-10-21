@@ -25,13 +25,20 @@ bool searchfn(void* elementp, const void* keyp){
         printf("NULL value");
         return false;
     }
-    if(elementp == keyp){
+    
+    if(strcmp(webpage_getURL(elementp), (char *)keyp) == 0) {
         return true;
     }
     else{
         return false;
     }
 }
+
+// int32_t pagesave(webpage_t *pagep, int id, char *dirname){
+//     int result;
+//     const char *filename = "/tmp/pages/%d";
+//     result = access (filename, F_OK);
+// }
 
 int main(int argc, char *argv[]){
     
@@ -79,11 +86,12 @@ int main(int argc, char *argv[]){
     // queue_t *qp = qopen();
     
     // while ((pos = webpage_getNextURL(pagep, pos, &result)) > 0) {
-        
     //     if(IsInternalURL(result)){
     //         printf("Found Internal URL: ");
 
     //         webpage_t *newpagep = webpage_new(result, 0, NULL);
+    //         webpage_fetch(newpagep);
+            
     //         qput(qp, (void *)newpagep);
     //     }
     //     else{
@@ -109,50 +117,46 @@ int main(int argc, char *argv[]){
 
     /*
      * Start of Step 4
-     */
+     */  
     int pos = 0;
     char *result;
     queue_t *qp = qopen();
+    hashtable_t *htp = hopen(10);    
 
-    hashtable_t *htp = hopen(10);
     while ((pos = webpage_getNextURL(pagep, pos, &result)) > 0) {
-        webpage_t *newpagep = webpage_new(result, 0, NULL);
-        if(IsInternalURL(result)){
-            printf("Internal URL: ");
-            hput(htp, newpagep, result, strlen(result));
-            printf("put already");
+        if(IsInternalURL(result)) {
+            if(hsearch(htp, searchfn, result, strlen(result)) == (void *)NULL) {
+                printf("New Internal URL: %s\n", result);
+
+                webpage_t *newpagep = webpage_new(result, 0, NULL);
+                // webpage_fetch(newpagep);
+
+                qput(qp, newpagep);
+                hput(htp, newpagep, result, strlen(result));
+            }
+            else{
+                printf("already visit\n");
+            }
         }
-        else{
-            printf("External URL: ");
+        else {
+            printf("External URL: %s\n", result);
         }
-        printf("Found url: %s\n", result);
-        free(result);
-        webpage_delete((void*)newpagep);
+
+        free(result);     
     }
 
-    // queue
-    // pos = 0;
-    // char *result2;
-    
-    // 2.4. print URL
-    // int pos = 0;
-    // char *result;
-    // while ((pos = webpage_getNextURL(pagep, pos, &result)) > 0) {
-    //     // webpage_t *newpagep = webpage_new(result, 0, html);
+    printf("-----Print Queue-----\n");
+    qapply(qp, print_webpage);
+    printf("-----End of Queue-----\n");
 
-    //     if(IsInternalURL(result)){
-    //         printf("Found Internal URL: ");
-    //         // qput(qp, newpagep);
-    //     }
-    //     else{
-    //         printf("Found External URL: ");
-    //     }
+    qapply(qp, webpage_delete);
+    qclose(qp);
+    hclose(htp);
+    webpage_delete((void *)pagep);
+    /*
+     * End of Step 4
+     */
 
-    //     printf("%s\n", result);
 
-    //     webpage_delete((void *)pagep);
-    //     free(result);
-    // }
-    
     exit(EXIT_SUCCESS);
 }
